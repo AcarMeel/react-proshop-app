@@ -4,7 +4,7 @@ import { Table, Button, Row, Col} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { listProducts } from '../actions/productActions'
+import { listProducts, deleteProduct } from '../actions/productActions'
 
 const ProductListScreen = ({ history, match }) => {
     const dispatch = useDispatch()
@@ -12,6 +12,8 @@ const ProductListScreen = ({ history, match }) => {
     const { loading, error, products } = productList;
     const userLogin = useSelector(state => state.userLogin)
     const { userInfo } = userLogin;
+    const productDelete = useSelector(state => state.productDelete)
+    const { loading: loadingDelete, success: successDelete, error: errorDelete } = productDelete;
 
     useEffect(() => {
         if (userInfo && userInfo.isAdmin) {
@@ -20,9 +22,10 @@ const ProductListScreen = ({ history, match }) => {
             history.push('/login')
         }
         
-    }, [dispatch, history, userInfo ])
+    }, [dispatch, history, userInfo, successDelete ])
 
     const deleteHandler = (productId) => {
+        dispatch(deleteProduct(productId))
     }
 
     const createProductHandler = () => {}
@@ -38,6 +41,8 @@ const ProductListScreen = ({ history, match }) => {
             
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
+            {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+            {loadingDelete && <Loader />}
             <Table striped bordered hover responsive className='table-sm'>
                 <thead>
                     <tr>
